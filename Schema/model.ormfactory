@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Software="OrmFactory.com">
+	<Database Name="Oracle schemas" Type="Oracle">
+		<Schema Name="SH">
+			<Table Name="CAL_MONTH_SALES_MV">
+				<Column Name="CALENDAR_MONTH_DESC" Type="VARCHAR2(8)" />
+				<Column Name="DOLLARS" Type="NUMBER" Nullable="true" />
+				<Index Name="I_SNAP$_CAL_MONTH_SALES_MV" Columns="SYS_NC00003$" Unique="true" />
+			</Table>
+			<Table Name="CHANNELS" Comment="small dimension table">
+				<Column Name="CHANNEL_ID" Type="NUMBER" Comment="primary key column" />
+				<Column Name="CHANNEL_DESC" Type="VARCHAR2(20)" Comment="e.g. telesales, internet, catalog" />
+				<Column Name="CHANNEL_CLASS" Type="VARCHAR2(20)" Comment="e.g. direct, indirect" />
+				<Column Name="CHANNEL_CLASS_ID" Type="NUMBER" />
+				<Column Name="CHANNEL_TOTAL" Type="VARCHAR2(13)" />
+				<Column Name="CHANNEL_TOTAL_ID" Type="NUMBER" />
+				<PrimaryKey Name="CHANNELS_PK" Columns="CHANNEL_ID" />
+			</Table>
+			<Table Name="COSTS">
+				<Column Name="PROD_ID" Type="NUMBER" />
+				<Column Name="TIME_ID" Type="DATE" />
+				<Column Name="PROMO_ID" Type="NUMBER" />
+				<Column Name="CHANNEL_ID" Type="NUMBER" />
+				<Column Name="UNIT_COST" Type="NUMBER(10,2)" />
+				<Column Name="UNIT_PRICE" Type="NUMBER(10,2)" />
+				<ForeignKey Name="COSTS_CHANNEL_FK" FromColumn="CHANNEL_ID" ToTable="CHANNELS" ToColumn="CHANNEL_ID" DeleteRule="No action" />
+				<ForeignKey Name="COSTS_PRODUCT_FK" FromColumn="PROD_ID" ToTable="PRODUCTS" ToColumn="PROD_ID" DeleteRule="No action" />
+				<ForeignKey Name="COSTS_PROMO_FK" FromColumn="PROMO_ID" ToTable="PROMOTIONS" ToColumn="PROMO_ID" DeleteRule="No action" />
+				<ForeignKey Name="COSTS_TIME_FK" FromColumn="TIME_ID" ToTable="TIMES" ToColumn="TIME_ID" DeleteRule="No action" />
+				<Index Name="COSTS_PROD_BIX" Columns="PROD_ID" />
+				<Index Name="COSTS_TIME_BIX" Columns="TIME_ID" />
+			</Table>
+			<Table Name="COUNTRIES" Comment="country dimension table (snowflake)">
+				<Column Name="COUNTRY_ID" Type="NUMBER" Comment="primary key" />
+				<Column Name="COUNTRY_ISO_CODE" Type="CHAR(2)" />
+				<Column Name="COUNTRY_NAME" Type="VARCHAR2(40)" Comment="country name" />
+				<Column Name="COUNTRY_SUBREGION" Type="VARCHAR2(30)" Comment="e.g. Western Europe, to allow hierarchies" />
+				<Column Name="COUNTRY_SUBREGION_ID" Type="NUMBER" />
+				<Column Name="COUNTRY_REGION" Type="VARCHAR2(20)" Comment="e.g. Europe, Asia" />
+				<Column Name="COUNTRY_REGION_ID" Type="NUMBER" />
+				<Column Name="COUNTRY_TOTAL" Type="VARCHAR2(11)" />
+				<Column Name="COUNTRY_TOTAL_ID" Type="NUMBER" />
+				<PrimaryKey Name="COUNTRIES_PK" Columns="COUNTRY_ID" />
+			</Table>
+			<Table Name="CUSTOMERS" Comment="dimension table">
+				<Column Name="CUST_ID" Type="NUMBER" Comment="primary key" />
+				<Column Name="CUST_FIRST_NAME" Type="VARCHAR2(20)" Comment="first name of the customer" />
+				<Column Name="CUST_LAST_NAME" Type="VARCHAR2(40)" Comment="last name of the customer" />
+				<Column Name="CUST_GENDER" Type="CHAR(1)" Comment="gender; low cardinality attribute" />
+				<Column Name="CUST_YEAR_OF_BIRTH" Type="NUMBER(4,0)" Comment="customer year of birth" />
+				<Column Name="CUST_MARITAL_STATUS" Type="VARCHAR2(20)" Comment="customer marital status; low cardinality attribute" Nullable="true" />
+				<Column Name="CUST_STREET_ADDRESS" Type="VARCHAR2(40)" Comment="customer street address" />
+				<Column Name="CUST_POSTAL_CODE" Type="VARCHAR2(10)" Comment="postal code of the customer" />
+				<Column Name="CUST_CITY" Type="VARCHAR2(30)" Comment="city where the customer lives" />
+				<Column Name="CUST_CITY_ID" Type="NUMBER" />
+				<Column Name="CUST_STATE_PROVINCE" Type="VARCHAR2(40)" Comment="customer geography: state or province" />
+				<Column Name="CUST_STATE_PROVINCE_ID" Type="NUMBER" />
+				<Column Name="COUNTRY_ID" Type="NUMBER" Comment="foreign key to the countries table (snowflake)" />
+				<Column Name="CUST_MAIN_PHONE_NUMBER" Type="VARCHAR2(25)" Comment="customer main phone number" />
+				<Column Name="CUST_INCOME_LEVEL" Type="VARCHAR2(30)" Comment="customer income level" Nullable="true" />
+				<Column Name="CUST_CREDIT_LIMIT" Type="NUMBER" Comment="customer credit limit" Nullable="true" />
+				<Column Name="CUST_EMAIL" Type="VARCHAR2(50)" Comment="customer email id" Nullable="true" />
+				<Column Name="CUST_TOTAL" Type="VARCHAR2(14)" />
+				<Column Name="CUST_TOTAL_ID" Type="NUMBER" />
+				<Column Name="CUST_SRC_ID" Type="NUMBER" Nullable="true" />
+				<Column Name="CUST_EFF_FROM" Type="DATE" Nullable="true" />
+				<Column Name="CUST_EFF_TO" Type="DATE" Nullable="true" />
+				<Column Name="CUST_VALID" Type="VARCHAR2(1)" Nullable="true" />
+				<PrimaryKey Name="CUSTOMERS_PK" Columns="CUST_ID" />
+				<ForeignKey Name="CUSTOMERS_COUNTRY_FK" FromColumn="COUNTRY_ID" ToTable="COUNTRIES" ToColumn="COUNTRY_ID" DeleteRule="No action" />
+				<Index Name="CUSTOMERS_GENDER_BIX" Columns="CUST_GENDER" />
+				<Index Name="CUSTOMERS_MARITAL_BIX" Columns="CUST_MARITAL_STATUS" />
+				<Index Name="CUSTOMERS_PK" Columns="CUST_ID" Unique="true" />
+				<Index Name="CUSTOMERS_YOB_BIX" Columns="CUST_YEAR_OF_BIRTH" />
+			</Table>
+			<Table Name="DR$SUP_TEXT_IDX$B">
+				<Column Name="MAX_DOCID" Type="NUMBER" Nullable="true" />
+				<Column Name="STATUS" Type="NUMBER" Nullable="true" />
+				<Column Name="MIN_DOCID" Type="NUMBER" Nullable="true" />
+			</Table>
+			<Table Name="DR$SUP_TEXT_IDX$C">
+				<Column Name="DML_RID" Type="ROWID" Nullable="true" />
+				<Column Name="DML_SCN" Type="NUMBER" Nullable="true" />
+				<Column Name="DML_OP" Type="NUMBER" Nullable="true" />
+				<Column Name="DML_ID" Type="NUMBER" Nullable="true" />
+			</Table>
+			<Table Name="DR$SUP_TEXT_IDX$I">
+				<Column Name="TOKEN_TYPE" Type="NUMBER(10,0)" />
+				<Column Name="TOKEN_LAST" Type="NUMBER(10,0)" />
+				<Column Name="TOKEN_COUNT" Type="NUMBER(10,0)" />
+				<Column Name="TOKEN_FIRST" Type="NUMBER(10,0)" />
+				<Column Name="TOKEN_TEXT" Type="VARCHAR2(255)" />
+				<Column Name="TOKEN_INFO" Type="BLOB" Nullable="true" />
+				<Index Name="DR$SUP_TEXT_IDX$X" Columns="TOKEN_TEXT, TOKEN_TYPE, TOKEN_FIRST, TOKEN_LAST, TOKEN_COUNT" />
+			</Table>
+			<Table Name="DR$SUP_TEXT_IDX$K">
+				<Column Name="DOCID" Type="NUMBER" Nullable="true" />
+				<Column Name="TEXTKEY" Type="ROWID" Nullable="true" />
+				<Index Name="DR$SUP_TEXT_IDX$KD" Columns="DOCID, TEXTKEY" Unique="true" />
+				<Index Name="DR$SUP_TEXT_IDX$KR" Columns="TEXTKEY, DOCID" Unique="true" />
+			</Table>
+			<Table Name="DR$SUP_TEXT_IDX$N">
+				<Column Name="NLT_MARK" Type="CHAR(1)" />
+				<Column Name="NLT_DOCID" Type="NUMBER(38,0)" />
+				<PrimaryKey Name="SYS_IOT_TOP_78938" Columns="NLT_DOCID" />
+				<Index Name="SYS_IOT_TOP_78938" Columns="NLT_DOCID" Unique="true" />
+			</Table>
+			<Table Name="DR$SUP_TEXT_IDX$Q">
+				<Column Name="DML_OP" Type="NUMBER" Nullable="true" />
+				<Column Name="DML_ID" Type="NUMBER" Nullable="true" />
+				<Column Name="DML_RID" Type="ROWID" Nullable="true" />
+			</Table>
+			<Table Name="DR$SUP_TEXT_IDX$U">
+				<Column Name="RID" Type="ROWID" />
+				<PrimaryKey Name="SYS_C009656" Columns="RID" />
+				<Index Name="SYS_C009656" Columns="RID" Unique="true" />
+			</Table>
+			<Table Name="FWEEK_PSCAT_SALES_MV">
+				<Column Name="WEEK_ENDING_DAY" Type="DATE" />
+				<Column Name="PROD_SUBCATEGORY" Type="VARCHAR2(50)" />
+				<Column Name="DOLLARS" Type="NUMBER" Nullable="true" />
+				<Column Name="CHANNEL_ID" Type="NUMBER(1,0)" />
+				<Column Name="PROMO_ID" Type="NUMBER(6,0)" />
+				<Index Name="FW_PSC_S_MV_CHAN_BIX" Columns="CHANNEL_ID" />
+				<Index Name="FW_PSC_S_MV_PROMO_BIX" Columns="PROMO_ID" />
+				<Index Name="FW_PSC_S_MV_SUBCAT_BIX" Columns="PROD_SUBCATEGORY" />
+				<Index Name="FW_PSC_S_MV_WD_BIX" Columns="WEEK_ENDING_DAY" />
+				<Index Name="I_SNAP$_FWEEK_PSCAT_SALES_MV" Columns="SYS_NC00006$, SYS_NC00007$, SYS_NC00008$, SYS_NC00009$" Unique="true" />
+			</Table>
+			<Table Name="PRODUCTS" Comment="dimension table">
+				<Column Name="PROD_ID" Type="NUMBER(6,0)" Comment="primary key" />
+				<Column Name="PROD_NAME" Type="VARCHAR2(50)" Comment="product name" />
+				<Column Name="PROD_DESC" Type="VARCHAR2(4000)" Comment="product description" />
+				<Column Name="PROD_SUBCATEGORY" Type="VARCHAR2(50)" Comment="product subcategory" />
+				<Column Name="PROD_SUBCATEGORY_ID" Type="NUMBER" />
+				<Column Name="PROD_SUBCATEGORY_DESC" Type="VARCHAR2(2000)" Comment="product subcategory description" />
+				<Column Name="PROD_CATEGORY" Type="VARCHAR2(50)" Comment="product category" />
+				<Column Name="PROD_CATEGORY_ID" Type="NUMBER" />
+				<Column Name="PROD_CATEGORY_DESC" Type="VARCHAR2(2000)" Comment="product category description" />
+				<Column Name="PROD_WEIGHT_CLASS" Type="NUMBER(3,0)" Comment="product weight class" />
+				<Column Name="PROD_UNIT_OF_MEASURE" Type="VARCHAR2(20)" Comment="product unit of measure" Nullable="true" />
+				<Column Name="PROD_PACK_SIZE" Type="VARCHAR2(30)" Comment="product package size" />
+				<Column Name="SUPPLIER_ID" Type="NUMBER(6,0)" Comment="this column" />
+				<Column Name="PROD_STATUS" Type="VARCHAR2(20)" Comment="product status" />
+				<Column Name="PROD_LIST_PRICE" Type="NUMBER(8,2)" Comment="product list price" />
+				<Column Name="PROD_MIN_PRICE" Type="NUMBER(8,2)" Comment="product minimum price" />
+				<Column Name="PROD_TOTAL" Type="VARCHAR2(13)" />
+				<Column Name="PROD_TOTAL_ID" Type="NUMBER" />
+				<Column Name="PROD_SRC_ID" Type="NUMBER" Nullable="true" />
+				<Column Name="PROD_EFF_FROM" Type="DATE" Nullable="true" />
+				<Column Name="PROD_EFF_TO" Type="DATE" Nullable="true" />
+				<Column Name="PROD_VALID" Type="VARCHAR2(1)" Nullable="true" />
+				<PrimaryKey Name="PRODUCTS_PK" Columns="PROD_ID" />
+				<Index Name="PRODUCTS_PROD_CAT_IX" Columns="PROD_CATEGORY" />
+				<Index Name="PRODUCTS_PROD_STATUS_BIX" Columns="PROD_STATUS" />
+				<Index Name="PRODUCTS_PROD_SUBCAT_IX" Columns="PROD_SUBCATEGORY" />
+			</Table>
+			<Table Name="PROMOTIONS" Comment="dimension table without a PK-FK relationship with the facts table, to show outer join functionality">
+				<Column Name="PROMO_ID" Type="NUMBER(6,0)" Comment="primary key column" />
+				<Column Name="PROMO_NAME" Type="VARCHAR2(30)" Comment="promotion description" />
+				<Column Name="PROMO_SUBCATEGORY" Type="VARCHAR2(30)" Comment="enables to investigate promotion hierarchies" />
+				<Column Name="PROMO_SUBCATEGORY_ID" Type="NUMBER" />
+				<Column Name="PROMO_CATEGORY" Type="VARCHAR2(30)" Comment="promotion category" />
+				<Column Name="PROMO_CATEGORY_ID" Type="NUMBER" />
+				<Column Name="PROMO_COST" Type="NUMBER(10,2)" Comment="promotion cost, to do promotion effect calculations" />
+				<Column Name="PROMO_BEGIN_DATE" Type="DATE" Comment="promotion begin day" />
+				<Column Name="PROMO_END_DATE" Type="DATE" Comment="promotion end day" />
+				<Column Name="PROMO_TOTAL" Type="VARCHAR2(15)" />
+				<Column Name="PROMO_TOTAL_ID" Type="NUMBER" />
+				<PrimaryKey Name="PROMO_PK" Columns="PROMO_ID" />
+				<Index Name="PROMO_PK" Columns="PROMO_ID" Unique="true" />
+			</Table>
+			<Table Name="SALES" Comment="facts table, without a primary key; all rows are uniquely identified by the combination of all foreign keys">
+				<Column Name="PROD_ID" Type="NUMBER(6,0)" Comment="FK to the products dimension table" />
+				<Column Name="CUST_ID" Type="NUMBER" Comment="FK to the customers dimension table" />
+				<Column Name="TIME_ID" Type="DATE" Comment="FK to the times dimension table" />
+				<Column Name="CHANNEL_ID" Type="NUMBER(1,0)" Comment="FK to the channels dimension table" />
+				<Column Name="PROMO_ID" Type="NUMBER(6,0)" Comment="promotion identifier, without FK constraint (intentionally) to show outer join optimization" />
+				<Column Name="QUANTITY_SOLD" Type="NUMBER(3,0)" Comment="product quantity sold with the transaction" />
+				<Column Name="AMOUNT_SOLD" Type="NUMBER(10,2)" Comment="invoiced amount to the customer" />
+				<ForeignKey Name="SALES_CHANNEL_FK" FromColumn="CHANNEL_ID" ToTable="CHANNELS" ToColumn="CHANNEL_ID" DeleteRule="No action" />
+				<ForeignKey Name="SALES_CUSTOMER_FK" FromColumn="CUST_ID" ToTable="CUSTOMERS" ToColumn="CUST_ID" DeleteRule="No action" />
+				<ForeignKey Name="SALES_PRODUCT_FK" FromColumn="PROD_ID" ToTable="PRODUCTS" ToColumn="PROD_ID" DeleteRule="No action" />
+				<ForeignKey Name="SALES_PROMO_FK" FromColumn="PROMO_ID" ToTable="PROMOTIONS" ToColumn="PROMO_ID" DeleteRule="No action" />
+				<ForeignKey Name="SALES_TIME_FK" FromColumn="TIME_ID" ToTable="TIMES" ToColumn="TIME_ID" DeleteRule="No action" />
+				<Index Name="SALES_CHANNEL_BIX" Columns="CHANNEL_ID" />
+				<Index Name="SALES_CUST_BIX" Columns="CUST_ID" />
+				<Index Name="SALES_PROD_BIX" Columns="PROD_ID" />
+				<Index Name="SALES_PROMO_BIX" Columns="PROMO_ID" />
+				<Index Name="SALES_TIME_BIX" Columns="TIME_ID" />
+			</Table>
+			<Table Name="SUPPLEMENTARY_DEMOGRAPHICS">
+				<Column Name="CUST_ID" Type="NUMBER" />
+				<Column Name="EDUCATION" Type="VARCHAR2(21)" Nullable="true" />
+				<Column Name="OCCUPATION" Type="VARCHAR2(21)" Nullable="true" />
+				<Column Name="HOUSEHOLD_SIZE" Type="VARCHAR2(21)" Nullable="true" />
+				<Column Name="YRS_RESIDENCE" Type="NUMBER" Nullable="true" />
+				<Column Name="AFFINITY_CARD" Type="NUMBER(10,0)" Nullable="true" />
+				<Column Name="CRICKET" Type="NUMBER(10,0)" Nullable="true" />
+				<Column Name="BASEBALL" Type="NUMBER(10,0)" Nullable="true" />
+				<Column Name="TENNIS" Type="NUMBER(10,0)" Nullable="true" />
+				<Column Name="SOCCER" Type="NUMBER(10,0)" Nullable="true" />
+				<Column Name="GOLF" Type="NUMBER(10,0)" Nullable="true" />
+				<Column Name="UNKNOWN" Type="NUMBER(10,0)" Nullable="true" />
+				<Column Name="MISC" Type="NUMBER(10,0)" Nullable="true" />
+				<Column Name="COMMENTS" Type="VARCHAR2(4000)" Nullable="true" />
+				<PrimaryKey Name="SUPP_DEMO_PK" Columns="CUST_ID" />
+				<Index Name="SUPP_DEMO_PK" Columns="CUST_ID" Unique="true" />
+				<Index Name="SUP_TEXT_IDX" Columns="COMMENTS" />
+			</Table>
+			<Table Name="TIMES" Comment="Time dimension table to support multiple hierarchies and materialized views">
+				<Column Name="TIME_ID" Type="DATE" Comment="primary key; day date, finest granularity, CORRECT ORDER" />
+				<Column Name="DAY_NAME" Type="VARCHAR2(9)" Comment="Monday to Sunday, repeating" />
+				<Column Name="DAY_NUMBER_IN_WEEK" Type="NUMBER(1,0)" Comment="1 to 7, repeating" />
+				<Column Name="DAY_NUMBER_IN_MONTH" Type="NUMBER(2,0)" Comment="1 to 31, repeating" />
+				<Column Name="CALENDAR_WEEK_NUMBER" Type="NUMBER(2,0)" Comment="1 to 53, repeating" />
+				<Column Name="FISCAL_WEEK_NUMBER" Type="NUMBER(2,0)" Comment="1 to 53, repeating" />
+				<Column Name="WEEK_ENDING_DAY" Type="DATE" Comment="date of last day in week, CORRECT ORDER" />
+				<Column Name="WEEK_ENDING_DAY_ID" Type="NUMBER" />
+				<Column Name="CALENDAR_MONTH_NUMBER" Type="NUMBER(2,0)" Comment="1 to 12, repeating" />
+				<Column Name="FISCAL_MONTH_NUMBER" Type="NUMBER(2,0)" Comment="1 to 12, repeating" />
+				<Column Name="CALENDAR_MONTH_DESC" Type="VARCHAR2(8)" Comment="e.g. 1998-01, CORRECT ORDER" />
+				<Column Name="CALENDAR_MONTH_ID" Type="NUMBER" />
+				<Column Name="FISCAL_MONTH_DESC" Type="VARCHAR2(8)" Comment="e.g. 1998-01, CORRECT ORDER" />
+				<Column Name="FISCAL_MONTH_ID" Type="NUMBER" />
+				<Column Name="DAYS_IN_CAL_MONTH" Type="NUMBER" Comment="e.g. 28,31, repeating" />
+				<Column Name="DAYS_IN_FIS_MONTH" Type="NUMBER" Comment="e.g. 25,32, repeating" />
+				<Column Name="END_OF_CAL_MONTH" Type="DATE" Comment="last day of calendar month" />
+				<Column Name="END_OF_FIS_MONTH" Type="DATE" Comment="last day of fiscal month" />
+				<Column Name="CALENDAR_MONTH_NAME" Type="VARCHAR2(9)" Comment="January to December, repeating" />
+				<Column Name="FISCAL_MONTH_NAME" Type="VARCHAR2(9)" Comment="January to December, repeating" />
+				<Column Name="CALENDAR_QUARTER_DESC" Type="CHAR(7)" Comment="e.g. 1998-Q1, CORRECT ORDER" />
+				<Column Name="CALENDAR_QUARTER_ID" Type="NUMBER" />
+				<Column Name="FISCAL_QUARTER_DESC" Type="CHAR(7)" Comment="e.g. 1999-Q3, CORRECT ORDER" />
+				<Column Name="FISCAL_QUARTER_ID" Type="NUMBER" />
+				<Column Name="DAYS_IN_CAL_QUARTER" Type="NUMBER" Comment="e.g. 88,90, repeating" />
+				<Column Name="DAYS_IN_FIS_QUARTER" Type="NUMBER" Comment="e.g. 88,90, repeating" />
+				<Column Name="END_OF_CAL_QUARTER" Type="DATE" Comment="last day of calendar quarter" />
+				<Column Name="END_OF_FIS_QUARTER" Type="DATE" Comment="last day of fiscal quarter" />
+				<Column Name="CALENDAR_QUARTER_NUMBER" Type="NUMBER(1,0)" Comment="1 to 4, repeating" />
+				<Column Name="FISCAL_QUARTER_NUMBER" Type="NUMBER(1,0)" Comment="1 to 4, repeating" />
+				<Column Name="CALENDAR_YEAR" Type="NUMBER(4,0)" Comment="e.g. 1999, CORRECT ORDER" />
+				<Column Name="CALENDAR_YEAR_ID" Type="NUMBER" />
+				<Column Name="FISCAL_YEAR" Type="NUMBER(4,0)" Comment="e.g. 1999, CORRECT ORDER" />
+				<Column Name="FISCAL_YEAR_ID" Type="NUMBER" />
+				<Column Name="DAYS_IN_CAL_YEAR" Type="NUMBER" Comment="365,366 repeating" />
+				<Column Name="DAYS_IN_FIS_YEAR" Type="NUMBER" Comment="e.g. 355,364, repeating" />
+				<Column Name="END_OF_CAL_YEAR" Type="DATE" Comment="last day of cal year" />
+				<Column Name="END_OF_FIS_YEAR" Type="DATE" Comment="last day of fiscal year" />
+				<PrimaryKey Name="TIMES_PK" Columns="TIME_ID" />
+				<Index Name="TIMES_PK" Columns="TIME_ID" Unique="true" />
+			</Table>
+		</Schema>
+	</Database>
+	<Layout Name="Sales history">
+		<Table Name="CUSTOMERS" Point="546,508" />
+		<Table Name="COUNTRIES" Point="150,796" />
+		<Table Name="CHANNELS" Point="278,361" />
+		<Table Name="COSTS" Point="580,253" />
+		<Table Name="PRODUCTS" Point="1023,23" />
+		<Table Name="PROMOTIONS" Point="252,29" />
+		<Table Name="TIMES" Point="798,313" />
+	</Layout>
+	<Connection DataBaseType="Oracle" Name="Oracle" ServerHost="127.0.0.1" UserName="kerman" Database="XEPDB1">
+		<Ssh Host="192.168.1.34" UserName="kerman" />
+	</Connection>
+	<Connection DataBaseType="Oracle" Name="OracleVpn" ServerHost="10.10.1.34" UserName="kerman" Database="XEPDB1" />
+</Project>
