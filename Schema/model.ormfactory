@@ -254,15 +254,34 @@
 	</Database>
 	<Layout Name="Sales history">
 		<Table Name="CUSTOMERS" Point="546,508" />
-		<Table Name="COUNTRIES" Point="150,796" />
-		<Table Name="CHANNELS" Point="278,361" />
+		<Table Name="COUNTRIES" Point="304,796" />
+		<Table Name="CHANNELS" Point="317,573" />
 		<Table Name="COSTS" Point="580,253" />
-		<Table Name="PRODUCTS" Point="1023,23" />
-		<Table Name="PROMOTIONS" Point="252,29" />
-		<Table Name="TIMES" Point="798,313" />
+		<Table Name="PRODUCTS" Point="1017,205" />
+		<Table Name="PROMOTIONS" Point="301,214" />
+		<Table Name="TIMES" Point="784,277" />
 	</Layout>
 	<Connection DataBaseType="Oracle" Name="Oracle" ServerHost="127.0.0.1" UserName="kerman" Database="XEPDB1">
 		<Ssh Host="192.168.1.34" UserName="kerman" />
 	</Connection>
 	<Connection DataBaseType="Oracle" Name="OracleVpn" ServerHost="10.10.1.34" UserName="kerman" Database="XEPDB1" />
+	<Generator Type="Python" Name="generator" FileName="generator.py" NameStyle="CamelCase">
+		<PartialGeneration WholeProject="false">
+			<Database Name="Oracle schemas">
+				<Schema Name="SH">
+					<Table Name="CAL_MONTH_SALES_MV" />
+					<Table Name="CHANNELS" />
+					<Table Name="COSTS" />
+					<Table Name="COUNTRIES" />
+					<Table Name="CUSTOMERS" />
+					<Table Name="FWEEK_PSCAT_SALES_MV" />
+					<Table Name="PRODUCTS" />
+					<Table Name="PROMOTIONS" />
+					<Table Name="SALES" />
+					<Table Name="SUPPLEMENTARY_DEMOGRAPHICS" />
+					<Table Name="TIMES" />
+				</Schema>
+			</Database>
+		</PartialGeneration>
+	</Generator>
 </Project>
