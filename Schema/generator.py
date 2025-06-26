@@ -67,7 +67,7 @@ def resolve_proto_type(db_type: str, column_name: str, nullable: bool):
     if csharp_type == "long":
         return "optional int32" if nullable else "int64"
     if csharp_type == "decimal":
-        return "ProtoDecimal"
+        return "DecimalProto"
     if csharp_type == "float":
         return "optional float" if nullable else "float"
     if csharp_type == "double":
@@ -127,7 +127,7 @@ def get_class_lines(table: ET.Element):
         yield f"{INDENT}public {class_type} {field_name} {{ get; set; }}"
     yield "}"
     yield ""
-    yield f"public partial class {class_name}Table"
+    yield f"public partial class {class_name}Table : TableBase<{class_name}>"
     yield "{"
     yield "}"
 
@@ -184,15 +184,13 @@ for db in root.findall('Database'):
                 dbsets.append(f"{INDENT}/// <summary>")
                 dbsets.append(f"{INDENT}///{comment}")
                 dbsets.append(f"{INDENT}/// </summary>")
-            dbsets.append(f"{INDENT}public static {class_name}Table {repository_name} = new {class_name}();")
+            dbsets.append(f"{INDENT}public static {class_name}Table {repository_name} = new();")
             classes.extend(get_class_lines(table))
             rpc.extend(get_proto_rpc(table))
             proto.extend(get_proto_entities(table))
 content_lines = [
     "using System;",
     "using Grpc.Core;",
-    
-    "using Microsoft.EntityFrameworkCore;",
     "using Client;",
     "",
     f"namespace {NAMESPACE};",

@@ -1,6 +1,5 @@
 using System;
 using Grpc.Core;
-using Microsoft.EntityFrameworkCore;
 using Client;
 
 namespace Client.Data;
@@ -10,32 +9,32 @@ public static class Tables
 	/// <summary>
 	///small dimension table
 	/// </summary>
-	public static ChannelTable Channels = new Channel();
-	public static CostTable Costs = new Cost();
+	public static ChannelTable Channels = new();
+	public static CostTable Costs = new();
 	/// <summary>
 	///country dimension table (snowflake)
 	/// </summary>
-	public static CountryTable Countries = new Country();
+	public static CountryTable Countries = new();
 	/// <summary>
 	///dimension table
 	/// </summary>
-	public static CustomerTable Customers = new Customer();
+	public static CustomerTable Customers = new();
 	/// <summary>
 	///dimension table
 	/// </summary>
-	public static ProductTable Products = new Product();
+	public static ProductTable Products = new();
 	/// <summary>
 	///dimension table without a PK-FK relationship with the facts table, to show outer join functionality
 	/// </summary>
-	public static PromotionTable Promotions = new Promotion();
+	public static PromotionTable Promotions = new();
 	/// <summary>
 	///facts table, without a primary key; all rows are uniquely identified by the combination of all foreign keys
 	/// </summary>
-	public static SaleTable Sales = new Sale();
+	public static SaleTable Sales = new();
 	/// <summary>
 	///Time dimension table to support multiple hierarchies and materialized views
 	/// </summary>
-	public static TimeTable Times = new Time();
+	public static TimeTable Times = new();
 }
 
 /// <summary>
@@ -60,7 +59,7 @@ public partial class Channel
 	public int ChannelTotalId { get; set; }
 }
 
-public partial class ChannelTable
+public partial class ChannelTable : TableBase<Channel>
 {
 }
 
@@ -78,7 +77,7 @@ public partial class Cost
 	public Time Time { get; set; }
 }
 
-public partial class CostTable
+public partial class CostTable : TableBase<Cost>
 {
 }
 
@@ -110,7 +109,7 @@ public partial class Country
 	public int CountryTotalId { get; set; }
 }
 
-public partial class CountryTable
+public partial class CountryTable : TableBase<Country>
 {
 }
 
@@ -190,7 +189,7 @@ public partial class Customer
 	public Country Country { get; set; }
 }
 
-public partial class CustomerTable
+public partial class CustomerTable : TableBase<Customer>
 {
 }
 
@@ -265,7 +264,7 @@ public partial class Product
 	public string? ProdValid { get; set; }
 }
 
-public partial class ProductTable
+public partial class ProductTable : TableBase<Product>
 {
 }
 
@@ -308,7 +307,7 @@ public partial class Promotion
 	public int PromoTotalId { get; set; }
 }
 
-public partial class PromotionTable
+public partial class PromotionTable : TableBase<Promotion>
 {
 }
 
@@ -352,7 +351,7 @@ public partial class Sale
 	public Time Time { get; set; }
 }
 
-public partial class SaleTable
+public partial class SaleTable : TableBase<Sale>
 {
 }
 
@@ -494,6 +493,6 @@ public partial class Time
 	public DateOnly EndOfFisYear { get; set; }
 }
 
-public partial class TimeTable
+public partial class TimeTable : TableBase<Time>
 {
 }

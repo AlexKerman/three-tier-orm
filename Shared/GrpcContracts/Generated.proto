@@ -49,8 +49,8 @@ message CostProto {
 	DateProto TimeId = 2;
 	int32 PromoId = 3;
 	int32 ChannelId = 4;
-	ProtoDecimal UnitCost = 5;
-	ProtoDecimal UnitPrice = 6;
+	DecimalProto UnitCost = 5;
+	DecimalProto UnitPrice = 6;
 	ChannelProto Channel = 7;
 	ProductProto Prod = 8;
 	PromotionProto Promo = 9;
@@ -97,7 +97,7 @@ message CustomerProto {
 	int32 CountryId = 13;
 	string CustMainPhoneNumber = 14;
 	optional string CustIncomeLevel = 15;
-	ProtoDecimal CustCreditLimit = 16;
+	DecimalProto CustCreditLimit = 16;
 	optional string CustEmail = 17;
 	string CustTotal = 18;
 	int32 CustTotalId = 19;
@@ -129,8 +129,8 @@ message ProductProto {
 	string ProdPackSize = 12;
 	int32 SupplierId = 13;
 	string ProdStatus = 14;
-	ProtoDecimal ProdListPrice = 15;
-	ProtoDecimal ProdMinPrice = 16;
+	DecimalProto ProdListPrice = 15;
+	DecimalProto ProdMinPrice = 16;
 	string ProdTotal = 17;
 	int32 ProdTotalId = 18;
 	optional int32 ProdSrcId = 19;
@@ -152,7 +152,7 @@ message PromotionProto {
 	int32 PromoSubcategoryId = 4;
 	string PromoCategory = 5;
 	int32 PromoCategoryId = 6;
-	ProtoDecimal PromoCost = 7;
+	DecimalProto PromoCost = 7;
 	DateProto PromoBeginDate = 8;
 	DateProto PromoEndDate = 9;
 	string PromoTotal = 10;
@@ -172,7 +172,7 @@ message SaleProto {
 	int32 ChannelId = 4;
 	int32 PromoId = 5;
 	int32 QuantitySold = 6;
-	ProtoDecimal AmountSold = 7;
+	DecimalProto AmountSold = 7;
 	ChannelProto Channel = 8;
 	CustomerProto Cust = 9;
 	ProductProto Prod = 10;
@@ -201,8 +201,8 @@ message TimeProto {
 	int32 CalendarMonthId = 12;
 	string FiscalMonthDesc = 13;
 	int32 FiscalMonthId = 14;
-	ProtoDecimal DaysInCalMonth = 15;
-	ProtoDecimal DaysInFisMonth = 16;
+	DecimalProto DaysInCalMonth = 15;
+	DecimalProto DaysInFisMonth = 16;
 	DateProto EndOfCalMonth = 17;
 	DateProto EndOfFisMonth = 18;
 	string CalendarMonthName = 19;
@@ -211,8 +211,8 @@ message TimeProto {
 	int32 CalendarQuarterId = 22;
 	string FiscalQuarterDesc = 23;
 	int32 FiscalQuarterId = 24;
-	ProtoDecimal DaysInCalQuarter = 25;
-	ProtoDecimal DaysInFisQuarter = 26;
+	DecimalProto DaysInCalQuarter = 25;
+	DecimalProto DaysInFisQuarter = 26;
 	DateProto EndOfCalQuarter = 27;
 	DateProto EndOfFisQuarter = 28;
 	int32 CalendarQuarterNumber = 29;
@@ -221,8 +221,8 @@ message TimeProto {
 	int32 CalendarYearId = 32;
 	int32 FiscalYear = 33;
 	int32 FiscalYearId = 34;
-	ProtoDecimal DaysInCalYear = 35;
-	ProtoDecimal DaysInFisYear = 36;
+	DecimalProto DaysInCalYear = 35;
+	DecimalProto DaysInFisYear = 36;
 	DateProto EndOfCalYear = 37;
 	DateProto EndOfFisYear = 38;
 }
