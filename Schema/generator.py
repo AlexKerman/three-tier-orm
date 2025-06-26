@@ -98,7 +98,7 @@ def get_class_lines(table: ET.Element):
     yield ""
     if table_comment:
         yield f"/// <summary>"
-        yield f"///{table_comment}"
+        yield f"/// {table_comment}"
         yield f"/// </summary>"
 
     yield f"public partial class {class_name}"
@@ -111,7 +111,7 @@ def get_class_lines(table: ET.Element):
         columns_dict[column_name] = column
         if comment:
             yield f"{INDENT}/// <summary>"
-            yield f"{INDENT}///{comment}"
+            yield f"{INDENT}/// {comment}"
             yield f"{INDENT}/// </summary>"
         csharp_type = resolve_type_from_column(column)
         yield f"{INDENT}public {csharp_type} {field_name} {{ get; set; }}"
@@ -125,6 +125,9 @@ def get_class_lines(table: ET.Element):
         if is_nullable:
             class_type = class_type + "?"
         yield f"{INDENT}public {class_type} {field_name} {{ get; set; }}"
+    yield ""
+    yield from get_from_proto_constructor(table)
+    yield from get_get_proto(table)
     yield "}"
     yield ""
     yield f"public partial class {class_name}Table : TableBase<{class_name}>"
@@ -149,7 +152,7 @@ def get_proto_entities(table: ET.Element):
     for column in table.findall("Column"):
         column_name = column.get("Name")
         field_name = column.get("FieldName")
-        db_type = column.get("DatabaseType").lower()    
+        db_type = column.get("DatabaseType").lower()
         nullable = column.get("Nullable", "false").lower() == "true"
         proto_type = resolve_proto_type(db_type, column_name, nullable)
         yield f"{INDENT}{proto_type} {field_name} = {i};"
@@ -164,6 +167,77 @@ def get_proto_entities(table: ET.Element):
     yield "}"
     yield ""
 
+def get_convert_field_from_proto(proto_type: str, from_expr: str):
+    if proto_type == "DateProto":
+        return f"DateProto.ToDateOnly({from_expr})"
+    if proto_type == "DecimalProto":
+        return f"DecimalProto.ToDecimal({from_expr})"
+    return from_expr
+
+def get_convert_field_to_proto(proto_type: str, from_expr: str):
+    if proto_type == "DateProto":
+        return f"DateProto.FromDateOnly({from_expr})"
+    if proto_type == "DecimalProto":
+        return f"DecimalProto.FromDecimal({from_expr})"
+    return from_expr
+
+def get_from_proto_constructor(table: ET.Element):
+    class_name = table.get("ClassName")
+    yield INDENT + f"public {class_name}() {{ }}"
+    yield INDENT + f"public {class_name}({class_name}Proto proto)"
+    yield INDENT + "{"
+    for column in table.findall("Column"):
+        field_name = column.get("FieldName")
+        column_name = column.get("Name")
+        db_type = column.get("DatabaseType").lower()
+        nullable = column.get("Nullable", "false").lower() == "true"
+        proto_type = resolve_proto_type(db_type, column_name, nullable)
+        line = f"{field_name} = {get_convert_field_from_proto(proto_type, "proto." + field_name)};"
+        if proto_type.startswith("optional"):
+            line = f"if (proto.Has{field_name}) {line}"
+        elif nullable:
+            line = f"if (proto.{field_name} != null) {line}"
+        yield INDENT*2 + line
+        
+    for fk in table.findall("ForeignKey"):
+        from_col = fk.get('FromColumn')
+        field_name = fk.get('FieldName')
+        class_name = fk.get('ToClassName')
+        yield f"{INDENT*2}if (proto.{field_name} != null)"
+        yield INDENT*2 + "{"
+        yield f"{INDENT*3}{field_name} = new {class_name}(proto.{field_name});"
+        yield INDENT*2 + "}"
+        
+    yield "}"
+    yield ""
+
+def get_get_proto(table: ET.Element):
+    class_name = table.get("ClassName")
+    yield INDENT + f"public {class_name}Proto GetProto()"
+    yield INDENT + "{"
+    yield f"{INDENT*2}var proto = new {class_name}Proto();"
+    for column in table.findall("Column"):
+        field_name = column.get("FieldName")
+        column_name = column.get("Name")
+        db_type = column.get("DatabaseType").lower()
+        nullable = column.get("Nullable", "false").lower() == "true"
+        proto_type = resolve_proto_type(db_type, column_name, nullable)
+        line = f"proto.{field_name} = {get_convert_field_to_proto(proto_type, field_name)};"
+        if proto_type.startswith("optional"):
+            add_value = ".Value"
+            if proto_type == "optional string":
+                add_value = ""
+            line = f"if ({field_name} != null) proto.{field_name} = {get_convert_field_to_proto(proto_type, field_name)}{add_value};"
+        yield INDENT*2 + line
+    for fk in table.findall("ForeignKey"):
+        from_col = fk.get('FromColumn')
+        field_name = fk.get('FieldName')
+        class_name = fk.get('ToClassName')
+        yield f"{INDENT*2}if ({field_name} != null) proto.{field_name} = {field_name}.GetProto();"
+    yield f"{INDENT*2}return proto;"
+    yield INDENT + "}"
+    yield ""
+    
 xmlFile = sys.argv[1]
 root = ET.parse(xmlFile).getroot()
 
@@ -182,7 +256,7 @@ for db in root.findall('Database'):
             comment = table.get("Comment")
             if comment:
                 dbsets.append(f"{INDENT}/// <summary>")
-                dbsets.append(f"{INDENT}///{comment}")
+                dbsets.append(f"{INDENT}/// {comment}")
                 dbsets.append(f"{INDENT}/// </summary>")
             dbsets.append(f"{INDENT}public static {class_name}Table {repository_name} = new();")
             classes.extend(get_class_lines(table))
@@ -192,6 +266,7 @@ content_lines = [
     "using System;",
     "using Grpc.Core;",
     "using Client;",
+    "using GrpcContracts;",
     "",
     f"namespace {NAMESPACE};",
     "",
