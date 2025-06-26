@@ -269,16 +269,13 @@
 		<PartialGeneration WholeProject="false">
 			<Database Name="Oracle schemas">
 				<Schema Name="SH">
-					<Table Name="CAL_MONTH_SALES_MV" />
 					<Table Name="CHANNELS" />
 					<Table Name="COSTS" />
 					<Table Name="COUNTRIES" />
 					<Table Name="CUSTOMERS" />
-					<Table Name="FWEEK_PSCAT_SALES_MV" />
 					<Table Name="PRODUCTS" />
 					<Table Name="PROMOTIONS" />
 					<Table Name="SALES" />
-					<Table Name="SUPPLEMENTARY_DEMOGRAPHICS" />
 					<Table Name="TIMES" />
 				</Schema>
 			</Database>

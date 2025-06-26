@@ -1,0 +1,40 @@
+﻿syntax = "proto3";
+option csharp_namespace = "GrpcContracts";
+package orm;
+
+message Empty {
+}
+
+message SelectRequest {
+	string request = 1;
+}
+
+message RequestReply {
+	int32 id = 1;
+	string error = 2;
+}
+
+message PercentReplyAsync {
+    int32 percent = 1;
+    string error = 2;
+}
+
+message DecimalProto {
+    sint32 v1 = 1;
+    sint32 v2 = 2;
+    sint32 v3 = 3;
+    sint32 v4 = 4;
+}
+
+message VersionProto {
+    int32 Major = 1;
+    int32 Minor = 2;
+    int32 Build = 3;
+    int32 Revision = 4;
+}
+
+message DateProto {
+  uint32 year = 1;
+  uint32 month = 2;
+  uint32 day = 3;
+}

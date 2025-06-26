@@ -1,0 +1,228 @@
+syntax = "proto3";
+option csharp_namespace = "GrpcContracts";
+import "Common.proto";
+import "google/protobuf/timestamp.proto";
+package orm;
+
+service Orm {
+	rpc SelectChannel (SelectRequest) returns (SelectChannelReply);
+	rpc SelectChannelStream (SelectRequest) returns (stream ChannelProto);
+	rpc SelectCost (SelectRequest) returns (SelectCostReply);
+	rpc SelectCostStream (SelectRequest) returns (stream CostProto);
+	rpc SelectCountry (SelectRequest) returns (SelectCountryReply);
+	rpc SelectCountryStream (SelectRequest) returns (stream CountryProto);
+	rpc SelectCustomer (SelectRequest) returns (SelectCustomerReply);
+	rpc SelectCustomerStream (SelectRequest) returns (stream CustomerProto);
+	rpc SelectProduct (SelectRequest) returns (SelectProductReply);
+	rpc SelectProductStream (SelectRequest) returns (stream ProductProto);
+	rpc SelectPromotion (SelectRequest) returns (SelectPromotionReply);
+	rpc SelectPromotionStream (SelectRequest) returns (stream PromotionProto);
+	rpc SelectSale (SelectRequest) returns (SelectSaleReply);
+	rpc SelectSaleStream (SelectRequest) returns (stream SaleProto);
+	rpc SelectTime (SelectRequest) returns (SelectTimeReply);
+	rpc SelectTimeStream (SelectRequest) returns (stream TimeProto);
+}
+
+message SelectChannelReply {
+	repeated ChannelProto Objects = 1;
+	int32 ErrorCode = 2;
+	string ErrorMessge = 3;
+}
+
+message ChannelProto {
+	int32 ChannelId = 1;
+	string ChannelDesc = 2;
+	string ChannelClass = 3;
+	int32 ChannelClassId = 4;
+	string ChannelTotal = 5;
+	int32 ChannelTotalId = 6;
+}
+
+message SelectCostReply {
+	repeated CostProto Objects = 1;
+	int32 ErrorCode = 2;
+	string ErrorMessge = 3;
+}
+
+message CostProto {
+	int32 ProdId = 1;
+	DateProto TimeId = 2;
+	int32 PromoId = 3;
+	int32 ChannelId = 4;
+	ProtoDecimal UnitCost = 5;
+	ProtoDecimal UnitPrice = 6;
+	ChannelProto Channel = 7;
+	ProductProto Prod = 8;
+	PromotionProto Promo = 9;
+	TimeProto Time = 10;
+}
+
+message SelectCountryReply {
+	repeated CountryProto Objects = 1;
+	int32 ErrorCode = 2;
+	string ErrorMessge = 3;
+}
+
+message CountryProto {
+	int32 CountryId = 1;
+	string CountryIsoCode = 2;
+	string CountryName = 3;
+	string CountrySubregion = 4;
+	int32 CountrySubregionId = 5;
+	string CountryRegion = 6;
+	int32 CountryRegionId = 7;
+	string CountryTotal = 8;
+	int32 CountryTotalId = 9;
+}
+
+message SelectCustomerReply {
+	repeated CustomerProto Objects = 1;
+	int32 ErrorCode = 2;
+	string ErrorMessge = 3;
+}
+
+message CustomerProto {
+	int32 CustId = 1;
+	string CustFirstName = 2;
+	string CustLastName = 3;
+	string CustGender = 4;
+	int32 CustYearOfBirth = 5;
+	optional string CustMaritalStatus = 6;
+	string CustStreetAddress = 7;
+	string CustPostalCode = 8;
+	string CustCity = 9;
+	int32 CustCityId = 10;
+	string CustStateProvince = 11;
+	int32 CustStateProvinceId = 12;
+	int32 CountryId = 13;
+	string CustMainPhoneNumber = 14;
+	optional string CustIncomeLevel = 15;
+	ProtoDecimal CustCreditLimit = 16;
+	optional string CustEmail = 17;
+	string CustTotal = 18;
+	int32 CustTotalId = 19;
+	optional int32 CustSrcId = 20;
+	DateProto CustEffFrom = 21;
+	DateProto CustEffTo = 22;
+	optional string CustValid = 23;
+	CountryProto Country = 24;
+}
+
+message SelectProductReply {
+	repeated ProductProto Objects = 1;
+	int32 ErrorCode = 2;
+	string ErrorMessge = 3;
+}
+
+message ProductProto {
+	int32 ProdId = 1;
+	string ProdName = 2;
+	string ProdDesc = 3;
+	string ProdSubcategory = 4;
+	int32 ProdSubcategoryId = 5;
+	string ProdSubcategoryDesc = 6;
+	string ProdCategory = 7;
+	int32 ProdCategoryId = 8;
+	string ProdCategoryDesc = 9;
+	int32 ProdWeightClass = 10;
+	optional string ProdUnitOfMeasure = 11;
+	string ProdPackSize = 12;
+	int32 SupplierId = 13;
+	string ProdStatus = 14;
+	ProtoDecimal ProdListPrice = 15;
+	ProtoDecimal ProdMinPrice = 16;
+	string ProdTotal = 17;
+	int32 ProdTotalId = 18;
+	optional int32 ProdSrcId = 19;
+	DateProto ProdEffFrom = 20;
+	DateProto ProdEffTo = 21;
+	optional string ProdValid = 22;
+}
+
+message SelectPromotionReply {
+	repeated PromotionProto Objects = 1;
+	int32 ErrorCode = 2;
+	string ErrorMessge = 3;
+}
+
+message PromotionProto {
+	int32 PromoId = 1;
+	string PromoName = 2;
+	string PromoSubcategory = 3;
+	int32 PromoSubcategoryId = 4;
+	string PromoCategory = 5;
+	int32 PromoCategoryId = 6;
+	ProtoDecimal PromoCost = 7;
+	DateProto PromoBeginDate = 8;
+	DateProto PromoEndDate = 9;
+	string PromoTotal = 10;
+	int32 PromoTotalId = 11;
+}
+
+message SelectSaleReply {
+	repeated SaleProto Objects = 1;
+	int32 ErrorCode = 2;
+	string ErrorMessge = 3;
+}
+
+message SaleProto {
+	int32 ProdId = 1;
+	int32 CustId = 2;
+	DateProto TimeId = 3;
+	int32 ChannelId = 4;
+	int32 PromoId = 5;
+	int32 QuantitySold = 6;
+	ProtoDecimal AmountSold = 7;
+	ChannelProto Channel = 8;
+	CustomerProto Cust = 9;
+	ProductProto Prod = 10;
+	PromotionProto Promo = 11;
+	TimeProto Time = 12;
+}
+
+message SelectTimeReply {
+	repeated TimeProto Objects = 1;
+	int32 ErrorCode = 2;
+	string ErrorMessge = 3;
+}
+
+message TimeProto {
+	DateProto TimeId = 1;
+	string DayName = 2;
+	int32 DayNumberInWeek = 3;
+	int32 DayNumberInMonth = 4;
+	int32 CalendarWeekNumber = 5;
+	int32 FiscalWeekNumber = 6;
+	DateProto WeekEndingDay = 7;
+	int32 WeekEndingDayId = 8;
+	int32 CalendarMonthNumber = 9;
+	int32 FiscalMonthNumber = 10;
+	string CalendarMonthDesc = 11;
+	int32 CalendarMonthId = 12;
+	string FiscalMonthDesc = 13;
+	int32 FiscalMonthId = 14;
+	ProtoDecimal DaysInCalMonth = 15;
+	ProtoDecimal DaysInFisMonth = 16;
+	DateProto EndOfCalMonth = 17;
+	DateProto EndOfFisMonth = 18;
+	string CalendarMonthName = 19;
+	string FiscalMonthName = 20;
+	string CalendarQuarterDesc = 21;
+	int32 CalendarQuarterId = 22;
+	string FiscalQuarterDesc = 23;
+	int32 FiscalQuarterId = 24;
+	ProtoDecimal DaysInCalQuarter = 25;
+	ProtoDecimal DaysInFisQuarter = 26;
+	DateProto EndOfCalQuarter = 27;
+	DateProto EndOfFisQuarter = 28;
+	int32 CalendarQuarterNumber = 29;
+	int32 FiscalQuarterNumber = 30;
+	int32 CalendarYear = 31;
+	int32 CalendarYearId = 32;
+	int32 FiscalYear = 33;
+	int32 FiscalYearId = 34;
+	ProtoDecimal DaysInCalYear = 35;
+	ProtoDecimal DaysInFisYear = 36;
+	DateProto EndOfCalYear = 37;
+	DateProto EndOfFisYear = 38;
+}

@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 INDENT = "\t"
 NEWLINE = "\n"
 OUTPUT_PATH = "../Client/Data/Generated.cs"
+PROTO_PATH = "../Shared/GrpcContracts/Generated.proto"
 NAMESPACE = "Client.Data"
 
 def is_database_generated(column: ET.Element):
@@ -34,9 +35,7 @@ def resolve_type(db_type: str, column_name: str) -> str:
         if scale is not None and scale > 0:
             return "decimal"
         if precision is not None:
-            if precision <= 4:
-                return "short"
-            elif precision <= 9:
+            if precision <= 9:
                 return "int"
             elif precision <= 18:
                 return "long"
@@ -57,6 +56,29 @@ def resolve_type(db_type: str, column_name: str) -> str:
     if any(db_type.startswith(t) for t in ["blob", "raw", "long raw"]):
         return "byte[]"
 
+    raise ValueError(f"Unknown type: {db_type}")
+
+def resolve_proto_type(db_type: str, column_name: str, nullable: bool):
+    csharp_type = resolve_type(db_type, column_name)
+    if csharp_type == "string":
+        return "optional string" if nullable else "string"
+    if csharp_type == "int":
+        return "optional int32" if nullable else "int32"
+    if csharp_type == "long":
+        return "optional int32" if nullable else "int64"
+    if csharp_type == "decimal":
+        return "ProtoDecimal"
+    if csharp_type == "float":
+        return "optional float" if nullable else "float"
+    if csharp_type == "double":
+        return "optional double" if nullable else "double"
+    if csharp_type == "DateTime":
+        return "optional double" if nullable else "double"
+    if csharp_type == "DateOnly":
+        return "DateProto"
+    if csharp_type == "byte[]":
+        return "bytes"
+        
     raise ValueError(f"Unknown type: {db_type}")
 
 def resolve_type_from_column(column: ET.Element) -> str:
@@ -109,6 +131,39 @@ def get_class_lines(table: ET.Element):
     yield "{"
     yield "}"
 
+def get_proto_rpc(table: ET.Element):
+    class_name = table.get("ClassName")
+    yield f"{INDENT}rpc Select{class_name} (SelectRequest) returns (Select{class_name}Reply);"
+    yield f"{INDENT}rpc Select{class_name}Stream (SelectRequest) returns (stream {class_name}Proto);"
+
+def get_proto_entities(table: ET.Element):
+    class_name = table.get("ClassName")
+    yield f"message Select{class_name}Reply {{"
+    yield f"{INDENT}repeated {class_name}Proto Objects = 1;"
+    yield f"{INDENT}int32 ErrorCode = 2;"
+    yield f"{INDENT}string ErrorMessge = 3;"
+    yield "}"
+    yield ""
+    yield f"message {class_name}Proto {{"
+    i = 1
+    for column in table.findall("Column"):
+        column_name = column.get("Name")
+        field_name = column.get("FieldName")
+        db_type = column.get("DatabaseType").lower()    
+        nullable = column.get("Nullable", "false").lower() == "true"
+        proto_type = resolve_proto_type(db_type, column_name, nullable)
+        yield f"{INDENT}{proto_type} {field_name} = {i};"
+        i = i + 1
+        
+    for fk in table.findall("ForeignKey"):
+        from_col = fk.get('FromColumn')
+        field_name = fk.get('FieldName')
+        class_name = fk.get('ToClassName')
+        yield f"{INDENT}{class_name}Proto {field_name} = {i};"
+        i = i + 1
+    yield "}"
+    yield ""
+
 xmlFile = sys.argv[1]
 root = ET.parse(xmlFile).getroot()
 
@@ -116,6 +171,8 @@ output_file = os.path.abspath(OUTPUT_PATH)
 
 dbsets = []
 classes = []
+rpc = []
+proto = []
 
 for db in root.findall('Database'):
     for schema in db.findall('Schema'):
@@ -129,6 +186,8 @@ for db in root.findall('Database'):
                 dbsets.append(f"{INDENT}/// </summary>")
             dbsets.append(f"{INDENT}public static {class_name}Table {repository_name} = new {class_name}();")
             classes.extend(get_class_lines(table))
+            rpc.extend(get_proto_rpc(table))
+            proto.extend(get_proto_entities(table))
 content_lines = [
     "using System;",
     "using Grpc.Core;",
@@ -145,5 +204,24 @@ content_lines.append("}")
 content_lines.extend(classes)
 
 content = NEWLINE.join(content_lines)
+with open(output_file, "w", encoding="utf-8", newline=NEWLINE) as f:
+    f.write(content)
+    
+proto_lines = [
+    "syntax = \"proto3\";",
+    "option csharp_namespace = \"GrpcContracts\";",
+    "import \"Common.proto\";",
+    "import \"google/protobuf/timestamp.proto\";",
+    "package orm;",
+    "",
+    "service Orm {"
+    ]
+proto_lines.extend(rpc)
+proto_lines.extend("}")
+proto_lines.extend([""])
+proto_lines.extend(proto)
+
+output_file = os.path.abspath(PROTO_PATH)
+content = NEWLINE.join(proto_lines)
 with open(output_file, "w", encoding="utf-8", newline=NEWLINE) as f:
     f.write(content)

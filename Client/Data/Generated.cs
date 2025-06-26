@@ -7,7 +7,6 @@ namespace Client.Data;
 
 public static class Tables
 {
-	public static CalMonthSalesMvTable CalMonthSalesMvs = new CalMonthSalesMv();
 	/// <summary>
 	///small dimension table
 	/// </summary>
@@ -21,7 +20,6 @@ public static class Tables
 	///dimension table
 	/// </summary>
 	public static CustomerTable Customers = new Customer();
-	public static FweekPscatSalesMvTable FweekPscatSalesMvs = new FweekPscatSalesMv();
 	/// <summary>
 	///dimension table
 	/// </summary>
@@ -34,21 +32,10 @@ public static class Tables
 	///facts table, without a primary key; all rows are uniquely identified by the combination of all foreign keys
 	/// </summary>
 	public static SaleTable Sales = new Sale();
-	public static SupplementaryDemographicTable SupplementaryDemographics = new SupplementaryDemographic();
 	/// <summary>
 	///Time dimension table to support multiple hierarchies and materialized views
 	/// </summary>
 	public static TimeTable Times = new Time();
-}
-
-public partial class CalMonthSalesMv
-{
-	public string CalendarMonthDesc { get; set; }
-	public decimal? Dollars { get; set; }
-}
-
-public partial class CalMonthSalesMvTable
-{
 }
 
 /// <summary>
@@ -151,7 +138,7 @@ public partial class Customer
 	/// <summary>
 	///customer year of birth
 	/// </summary>
-	public short CustYearOfBirth { get; set; }
+	public int CustYearOfBirth { get; set; }
 	/// <summary>
 	///customer marital status; low cardinality attribute
 	/// </summary>
@@ -207,19 +194,6 @@ public partial class CustomerTable
 {
 }
 
-public partial class FweekPscatSalesMv
-{
-	public DateOnly WeekEndingDay { get; set; }
-	public string ProdSubcategory { get; set; }
-	public decimal? Dollars { get; set; }
-	public int ChannelId { get; set; }
-	public int PromoId { get; set; }
-}
-
-public partial class FweekPscatSalesMvTable
-{
-}
-
 /// <summary>
 ///dimension table
 /// </summary>
@@ -258,7 +232,7 @@ public partial class Product
 	/// <summary>
 	///product weight class
 	/// </summary>
-	public short ProdWeightClass { get; set; }
+	public int ProdWeightClass { get; set; }
 	/// <summary>
 	///product unit of measure
 	/// </summary>
@@ -366,7 +340,7 @@ public partial class Sale
 	/// <summary>
 	///product quantity sold with the transaction
 	/// </summary>
-	public short QuantitySold { get; set; }
+	public int QuantitySold { get; set; }
 	/// <summary>
 	///invoiced amount to the customer
 	/// </summary>
@@ -379,28 +353,6 @@ public partial class Sale
 }
 
 public partial class SaleTable
-{
-}
-
-public partial class SupplementaryDemographic
-{
-	public int CustId { get; set; }
-	public string? Education { get; set; }
-	public string? Occupation { get; set; }
-	public string? HouseholdSize { get; set; }
-	public decimal? YrsResidence { get; set; }
-	public long? AffinityCard { get; set; }
-	public long? Cricket { get; set; }
-	public long? Baseball { get; set; }
-	public long? Tennis { get; set; }
-	public long? Soccer { get; set; }
-	public long? Golf { get; set; }
-	public long? Unknown { get; set; }
-	public long? Misc { get; set; }
-	public string? Comments { get; set; }
-}
-
-public partial class SupplementaryDemographicTable
 {
 }
 
@@ -420,19 +372,19 @@ public partial class Time
 	/// <summary>
 	///1 to 7, repeating
 	/// </summary>
-	public short DayNumberInWeek { get; set; }
+	public int DayNumberInWeek { get; set; }
 	/// <summary>
 	///1 to 31, repeating
 	/// </summary>
-	public short DayNumberInMonth { get; set; }
+	public int DayNumberInMonth { get; set; }
 	/// <summary>
 	///1 to 53, repeating
 	/// </summary>
-	public short CalendarWeekNumber { get; set; }
+	public int CalendarWeekNumber { get; set; }
 	/// <summary>
 	///1 to 53, repeating
 	/// </summary>
-	public short FiscalWeekNumber { get; set; }
+	public int FiscalWeekNumber { get; set; }
 	/// <summary>
 	///date of last day in week, CORRECT ORDER
 	/// </summary>
@@ -441,11 +393,11 @@ public partial class Time
 	/// <summary>
 	///1 to 12, repeating
 	/// </summary>
-	public short CalendarMonthNumber { get; set; }
+	public int CalendarMonthNumber { get; set; }
 	/// <summary>
 	///1 to 12, repeating
 	/// </summary>
-	public short FiscalMonthNumber { get; set; }
+	public int FiscalMonthNumber { get; set; }
 	/// <summary>
 	///e.g. 1998-01, CORRECT ORDER
 	/// </summary>
@@ -509,20 +461,20 @@ public partial class Time
 	/// <summary>
 	///1 to 4, repeating
 	/// </summary>
-	public short CalendarQuarterNumber { get; set; }
+	public int CalendarQuarterNumber { get; set; }
 	/// <summary>
 	///1 to 4, repeating
 	/// </summary>
-	public short FiscalQuarterNumber { get; set; }
+	public int FiscalQuarterNumber { get; set; }
 	/// <summary>
 	///e.g. 1999, CORRECT ORDER
 	/// </summary>
-	public short CalendarYear { get; set; }
+	public int CalendarYear { get; set; }
 	public int CalendarYearId { get; set; }
 	/// <summary>
 	///e.g. 1999, CORRECT ORDER
 	/// </summary>
-	public short FiscalYear { get; set; }
+	public int FiscalYear { get; set; }
 	public int FiscalYearId { get; set; }
 	/// <summary>
 	///365,366 repeating
