@@ -60,9 +60,16 @@ The server turns this into a query for the database and returns the result via g
 
 I installed Oracle on a virtual machine. To check, I will select all records from products:
 
-![direct fetch](simple_table_direct_fetch.png)
+![direct fetch](Images/simple_table_direct_fetch.png)
 
 Next, I connected the computer and the virtual machine to the remote VPN server. Now the ping is about 230 ms. Let's check fetch:
 
-![vpn fetch](simple_table_vpn_fetch.gif)
+![vpn fetch](Images/simple_table_vpn_fetch.gif)
 
+With running server on local machine:
+
+![local_server fetch](Images/first_fetch.gif)
+
+With server running on Oracle Linux:
+
+![remote_server fetch](Images/fetch_from_ol_server.gif)
