@@ -5,8 +5,10 @@ import xml.etree.ElementTree as ET
 INDENT = "\t"
 NEWLINE = "\n"
 OUTPUT_PATH = "../Client/Data/Generated.cs"
+SERVER_CLASS_PATH = "../Server/Server/Data/Generated.cs"
 PROTO_PATH = "../Shared/GrpcContracts/Generated.proto"
 NAMESPACE = "Client.Data"
+SERVER_NAMESPACE = "Server.Data"
 
 def is_database_generated(column: ET.Element):
     default_value = column.get("Default")
@@ -237,12 +239,78 @@ def get_get_proto(table: ET.Element):
     yield f"{INDENT*2}return proto;"
     yield INDENT + "}"
     yield ""
+
+def get_server_class_lines(table: ET.Element):
+    table_name = table.get("Name")
+    class_name = table.get("ClassName")
+    table_comment = table.get("Comment")
     
+    yield ""
+    if table_comment:
+        yield f"/// <summary>"
+        yield f"/// {table_comment}"
+        yield f"/// </summary>"
+
+    yield f"public partial class {class_name} : EntityBase"
+    yield "{"
+    props_to_fields = []
+    field_reader = []
+    columns_dict = {}
+    for column in table.findall("Column"):
+        column_name = column.get("Name")
+        field_name = column.get("FieldName")
+        comment = column.get("Comment")
+        nullable = column.get("Nullable", "false").lower() == "true"
+        columns_dict[column_name] = column
+        if comment:
+            yield f"{INDENT}/// <summary>"
+            yield f"{INDENT}/// {comment}"
+            yield f"{INDENT}/// </summary>"
+        csharp_type = resolve_type_from_column(column)
+        yield f"{INDENT}public {csharp_type} {field_name};"
+        
+        props_to_fields.append(INDENT*2 + f"{{ \"{field_name}\", \"{column_name}\" }},")
+        
+        field_reader.append(INDENT*2 + f"fr.Read(ref {field_name}, tableName + \"_{column_name}\");")
+        
+    for fk in table.findall("ForeignKey"):
+        from_col = fk.get('FromColumn')
+        field_name = fk.get('FieldName')
+        class_type = fk.get('ToClassName')
+        from_column = columns_dict[from_col]
+        from_field_name = from_column.get("FieldName")
+        is_nullable = from_column.get("Nullable", "false").lower() == "true"
+        if is_nullable:
+            class_type = class_type + "?"
+        yield f"{INDENT}public {class_type} {field_name} {{ get; set; }}"
+    yield ""
+    yield from get_from_proto_constructor(table)
+    yield from get_get_proto(table)
+    yield ""
+    yield INDENT + f"public override void LoadFromReader(FieldReader fr, string tableName)"
+    yield INDENT + "{"
+    yield from field_reader
+    yield INDENT + "}"
+    yield "}"
+    yield ""
+    yield f"public partial class {class_name}Table : TableBase<{class_name}>"
+    yield "{"
+    yield INDENT + f"public override string TableDbName => \"{table_name}\";"
+    yield INDENT + f"public override string SchemaDbName => \"SH\";"
+    yield INDENT + f"public override Dictionary<string, string> PropertiesToFields => new()"
+    yield INDENT + "{"
+    yield from props_to_fields
+    yield INDENT + "};"
+    yield "}"
+
+
 xmlFile = sys.argv[1]
 root = ET.parse(xmlFile).getroot()
 
 output_file = os.path.abspath(OUTPUT_PATH)
 
+server_repos = []
+server_classes = []
 dbsets = []
 classes = []
 rpc = []
@@ -258,10 +326,15 @@ for db in root.findall('Database'):
                 dbsets.append(f"{INDENT}/// <summary>")
                 dbsets.append(f"{INDENT}/// {comment}")
                 dbsets.append(f"{INDENT}/// </summary>")
+                server_repos.append(f"{INDENT}/// <summary>")
+                server_repos.append(f"{INDENT}/// {comment}")
+                server_repos.append(f"{INDENT}/// </summary>")
             dbsets.append(f"{INDENT}public static {class_name}Table {repository_name} = new();")
+            server_repos.append(f"{INDENT}public static {class_name}Table {repository_name} = new();")
             classes.extend(get_class_lines(table))
             rpc.extend(get_proto_rpc(table))
             proto.extend(get_proto_entities(table))
+            server_classes.extend(get_server_class_lines(table))
 content_lines = [
     "using System;",
     "using Grpc.Core;",
@@ -296,5 +369,23 @@ proto_lines.extend(proto)
 
 output_file = os.path.abspath(PROTO_PATH)
 content = NEWLINE.join(proto_lines)
+with open(output_file, "w", encoding="utf-8", newline=NEWLINE) as f:
+    f.write(content)
+
+content_lines = [
+    "using System;",
+    "using Grpc.Core;",
+    "using GrpcContracts;",
+    "using Oracle.ManagedDataAccess.Client;",
+    "",
+    f"namespace {SERVER_NAMESPACE};",
+    "",
+    f"public static class Tables",
+    "{"]
+content_lines.extend(server_repos)
+content_lines.append("}")
+content_lines.extend(server_classes)
+output_file = os.path.abspath(SERVER_CLASS_PATH)
+content = NEWLINE.join(content_lines)
 with open(output_file, "w", encoding="utf-8", newline=NEWLINE) as f:
     f.write(content)

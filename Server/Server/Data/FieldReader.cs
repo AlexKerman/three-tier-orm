@@ -3,7 +3,7 @@ using Oracle.ManagedDataAccess.Client;
 
 namespace Server.Data;
 
-public class FieldReader
+public class FieldReader : IDisposable
 {
 	private readonly OracleDataReader dr;
 
@@ -56,6 +56,12 @@ public class FieldReader
 	public void Read(ref decimal o, string fieldName)
 	{
 		o = Convert.ToDecimal(dr[fieldName]);
+	}
+
+	public void Read(ref decimal? o, string fieldName)
+	{
+		if (dr[fieldName] is not DBNull)
+			o = Convert.ToDecimal(dr[fieldName]);
 	}
 
 	public void Read(ref DateOnly o, string fieldName)
