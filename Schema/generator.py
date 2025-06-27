@@ -134,6 +134,15 @@ def get_class_lines(table: ET.Element):
     yield ""
     yield f"public partial class {class_name}Table : TableBase<{class_name}>"
     yield "{"
+    yield INDENT + f"public override IEnumerable<{class_name}> Select(SelectRequest request, Orm.OrmClient client)"
+    yield INDENT + "{"
+    yield INDENT*2 + f"var response = client.Select{class_name}(request);"
+    yield INDENT*2 + "if (response.ErrorMessage != \"\") throw new Exception(response.ErrorMessage);"
+    yield INDENT*2 + "foreach (var proto in response.Objects)"
+    yield INDENT*2 + "{"
+    yield INDENT*3 + f"yield return new {class_name}(proto);"
+    yield INDENT*2 + "}"
+    yield INDENT + "}"
     yield "}"
 
 def get_proto_rpc(table: ET.Element):
@@ -146,7 +155,7 @@ def get_proto_entities(table: ET.Element):
     yield f"message Select{class_name}Reply {{"
     yield f"{INDENT}repeated {class_name}Proto Objects = 1;"
     yield f"{INDENT}int32 ErrorCode = 2;"
-    yield f"{INDENT}string ErrorMessge = 3;"
+    yield f"{INDENT}string ErrorMessage = 3;"
     yield "}"
     yield ""
     yield f"message {class_name}Proto {{"
@@ -337,6 +346,7 @@ for db in root.findall('Database'):
             server_classes.extend(get_server_class_lines(table))
 content_lines = [
     "using System;",
+    "using System.Collections.Generic;",
     "using Grpc.Core;",
     "using Client;",
     "using GrpcContracts;",

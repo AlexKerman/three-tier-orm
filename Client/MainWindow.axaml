@@ -1,9 +1,24 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:local="clr-namespace:Client"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		Width="760" Height="400"
         x:Class="Client.MainWindow"
+        x:DataType="local:MasterViewModel"
         Title="Client">
-    Welcome to Avalonia!
+	<Grid RowDefinitions="*, 42">
+		<DataGrid Grid.Row="0"
+		          ItemsSource="{Binding Products}"
+		          AutoGenerateColumns="True"
+		          BorderThickness="1"
+		          GridLinesVisibility="All"
+		          HeadersVisibility="All">
+		</DataGrid>
+		<StackPanel Orientation="Horizontal" Grid.Row="1" Margin="4">
+			<Button Click="Button_OnClick">Start</Button>
+			<Label Content="{Binding FetchedTime}"></Label>
+		</StackPanel>
+	</Grid>
 </Window>

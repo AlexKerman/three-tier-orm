@@ -1,11 +1,15 @@
-﻿using System;
+﻿using Grpc.Net.Client;
+using Grpc.Net.Client.Web;
+using GrpcContracts;
+using GrpcContracts.Expressions;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using GrpcContracts.Expressions;
 
 namespace Client.Data;
 
@@ -102,20 +106,13 @@ public class LinqProvider<T> : IQueryProvider, IOrderedQueryable<T>
 	private IEnumerable<T> GetEnumerable(ExpressionSerializer serializer)
 	{
 		var xmlRequest = serializer.GetXml();
+		var client = Services.GetOrmClient();
 
-		//var handler = new GrpcWebHandler(GrpcWebMode.GrpcWebText, new HttpClientHandler());
-		//using var channel = GrpcChannel.ForAddress(Connections.ConnectionAddress, new GrpcChannelOptions
-		//{
-		//	HttpClient = new HttpClient(handler)
-		//});
-		//var client = new Orm.OrmClient(channel);
+		var request = new SelectRequest();
+		request.Request = xmlRequest;
+		var reply = tableBase.Select(request, client);
 
-		//var request = new SelectRequest();
-		//request.Request = xmlRequest;
-		//var reply = tableBase.Select(request, client);
-		//return reply.ToList();
-
-		return new List<T>();
+		return reply;
 	}
 
 	public Expression Expression => Expression.Constant(this);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Grpc.Core;
 using Client;
 using GrpcContracts;
@@ -86,6 +87,15 @@ public partial class Channel
 
 public partial class ChannelTable : TableBase<Channel>
 {
+	public override IEnumerable<Channel> Select(SelectRequest request, Orm.OrmClient client)
+	{
+		var response = client.SelectChannel(request);
+		if (response.ErrorMessage != "") throw new Exception(response.ErrorMessage);
+		foreach (var proto in response.Objects)
+		{
+			yield return new Channel(proto);
+		}
+	}
 }
 
 public partial class Cost
@@ -148,6 +158,15 @@ public partial class Cost
 
 public partial class CostTable : TableBase<Cost>
 {
+	public override IEnumerable<Cost> Select(SelectRequest request, Orm.OrmClient client)
+	{
+		var response = client.SelectCost(request);
+		if (response.ErrorMessage != "") throw new Exception(response.ErrorMessage);
+		foreach (var proto in response.Objects)
+		{
+			yield return new Cost(proto);
+		}
+	}
 }
 
 /// <summary>
@@ -210,6 +229,15 @@ public partial class Country
 
 public partial class CountryTable : TableBase<Country>
 {
+	public override IEnumerable<Country> Select(SelectRequest request, Orm.OrmClient client)
+	{
+		var response = client.SelectCountry(request);
+		if (response.ErrorMessage != "") throw new Exception(response.ErrorMessage);
+		foreach (var proto in response.Objects)
+		{
+			yield return new Country(proto);
+		}
+	}
 }
 
 /// <summary>
@@ -353,6 +381,15 @@ public partial class Customer
 
 public partial class CustomerTable : TableBase<Customer>
 {
+	public override IEnumerable<Customer> Select(SelectRequest request, Orm.OrmClient client)
+	{
+		var response = client.SelectCustomer(request);
+		if (response.ErrorMessage != "") throw new Exception(response.ErrorMessage);
+		foreach (var proto in response.Objects)
+		{
+			yield return new Customer(proto);
+		}
+	}
 }
 
 /// <summary>
@@ -484,6 +521,15 @@ public partial class Product
 
 public partial class ProductTable : TableBase<Product>
 {
+	public override IEnumerable<Product> Select(SelectRequest request, Orm.OrmClient client)
+	{
+		var response = client.SelectProduct(request);
+		if (response.ErrorMessage != "") throw new Exception(response.ErrorMessage);
+		foreach (var proto in response.Objects)
+		{
+			yield return new Product(proto);
+		}
+	}
 }
 
 /// <summary>
@@ -561,6 +607,15 @@ public partial class Promotion
 
 public partial class PromotionTable : TableBase<Promotion>
 {
+	public override IEnumerable<Promotion> Select(SelectRequest request, Orm.OrmClient client)
+	{
+		var response = client.SelectPromotion(request);
+		if (response.ErrorMessage != "") throw new Exception(response.ErrorMessage);
+		foreach (var proto in response.Objects)
+		{
+			yield return new Promotion(proto);
+		}
+	}
 }
 
 /// <summary>
@@ -656,6 +711,15 @@ public partial class Sale
 
 public partial class SaleTable : TableBase<Sale>
 {
+	public override IEnumerable<Sale> Select(SelectRequest request, Orm.OrmClient client)
+	{
+		var response = client.SelectSale(request);
+		if (response.ErrorMessage != "") throw new Exception(response.ErrorMessage);
+		foreach (var proto in response.Objects)
+		{
+			yield return new Sale(proto);
+		}
+	}
 }
 
 /// <summary>
@@ -886,4 +950,13 @@ public partial class Time
 
 public partial class TimeTable : TableBase<Time>
 {
+	public override IEnumerable<Time> Select(SelectRequest request, Orm.OrmClient client)
+	{
+		var response = client.SelectTime(request);
+		if (response.ErrorMessage != "") throw new Exception(response.ErrorMessage);
+		foreach (var proto in response.Objects)
+		{
+			yield return new Time(proto);
+		}
+	}
 }

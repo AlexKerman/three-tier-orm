@@ -70,4 +70,5 @@ public abstract class TableBase<TEntity> : IQueryable<TEntity>, IOrderedQueryabl
 	//{
 	//	return new AsyncProtoFetcher<TEntity, TProto>(request, this);
 	//}
+	public abstract IEnumerable<TEntity> Select(SelectRequest request, Orm.OrmClient client);
 }

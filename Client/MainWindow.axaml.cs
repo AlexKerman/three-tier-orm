@@ -1,22 +1,28 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Client.Data;
 
 namespace Client
 {
 	public partial class MainWindow : Window
 	{
+		private MasterViewModel vm;
+
 		public MainWindow()
 		{
 			InitializeComponent();
+			vm = new MasterViewModel();
+			DataContext = vm;
+		}
 
-			var list = Tables.Costs
-				.Include(c => c.Promo)
-				.Where(c => c.ProdId == 0 && c.UnitCost > 10.0m)
-				.OrderBy(c => c.ChannelId)
-				.Include(c => c.Prod)
-				.Take(10)
-				.ToList();
+		private void Button_OnClick(object? sender, RoutedEventArgs e)
+		{
+			Task.Run(() =>
+			{
+				vm.LoadProducts();
+			});
 		}
 	}
 }

@@ -23,7 +23,7 @@ public class SqlRequest
 	public int Take = 0;
 	public int Skip = 0;
 
-	public string TableAsName { get; }
+	public string TableAsName => "t";
 
 	private ISqlTable table;
 

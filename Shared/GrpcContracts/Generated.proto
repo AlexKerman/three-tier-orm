@@ -26,7 +26,7 @@ service Orm {
 message SelectChannelReply {
 	repeated ChannelProto Objects = 1;
 	int32 ErrorCode = 2;
-	string ErrorMessge = 3;
+	string ErrorMessage = 3;
 }
 
 message ChannelProto {
@@ -41,7 +41,7 @@ message ChannelProto {
 message SelectCostReply {
 	repeated CostProto Objects = 1;
 	int32 ErrorCode = 2;
-	string ErrorMessge = 3;
+	string ErrorMessage = 3;
 }
 
 message CostProto {
@@ -60,7 +60,7 @@ message CostProto {
 message SelectCountryReply {
 	repeated CountryProto Objects = 1;
 	int32 ErrorCode = 2;
-	string ErrorMessge = 3;
+	string ErrorMessage = 3;
 }
 
 message CountryProto {
@@ -78,7 +78,7 @@ message CountryProto {
 message SelectCustomerReply {
 	repeated CustomerProto Objects = 1;
 	int32 ErrorCode = 2;
-	string ErrorMessge = 3;
+	string ErrorMessage = 3;
 }
 
 message CustomerProto {
@@ -111,7 +111,7 @@ message CustomerProto {
 message SelectProductReply {
 	repeated ProductProto Objects = 1;
 	int32 ErrorCode = 2;
-	string ErrorMessge = 3;
+	string ErrorMessage = 3;
 }
 
 message ProductProto {
@@ -142,7 +142,7 @@ message ProductProto {
 message SelectPromotionReply {
 	repeated PromotionProto Objects = 1;
 	int32 ErrorCode = 2;
-	string ErrorMessge = 3;
+	string ErrorMessage = 3;
 }
 
 message PromotionProto {
@@ -162,7 +162,7 @@ message PromotionProto {
 message SelectSaleReply {
 	repeated SaleProto Objects = 1;
 	int32 ErrorCode = 2;
-	string ErrorMessge = 3;
+	string ErrorMessage = 3;
 }
 
 message SaleProto {
@@ -183,7 +183,7 @@ message SaleProto {
 message SelectTimeReply {
 	repeated TimeProto Objects = 1;
 	int32 ErrorCode = 2;
-	string ErrorMessge = 3;
+	string ErrorMessage = 3;
 }
 
 message TimeProto {

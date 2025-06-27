@@ -12,7 +12,7 @@ I used the [OrmFactory database manager](https://ormfactory.com) to work with th
 
 The test scheme is taken from the [Oracle sample schemas repository](https://github.com/oracle-samples/db-sample-schemas). Look for `sales_history`.
 
-![[oracle_schema.png]]
+![schema er diagram](Images/oracle_schema.png)
 
 A three-tier architecture was taken as a basis. The exchange protocol between the client and the server is gRPC. Both use .NET 8.
 
@@ -23,3 +23,46 @@ A three-tier architecture was taken as a basis. The exchange protocol between th
 - `Schema` - place for OrmFactory's model and python code generator
 - `Server` - server solution folder
 - `Shared` - folder for shared between client and server project
+
+## Principle
+
+Clien-side request:
+
+```csharp
+var list = Tables.Costs
+	.Where(c => c.ProdId == 0 && c.UnitCost > 10.0m)
+	.OrderBy(c => c.ChannelId)
+	.Take(10)
+	.ToList();
+```
+
+Turned into XML message:
+
+```xml
+<RequestExpression xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" OrderByField="ChannelId">
+	<Limit Take="10" />
+	<Condition Operator="And">
+		<Left Operator="Equal">
+			<Left Operator="Parameter" Value="ProdId" />
+			<Right Operator="Value" Value="0" />
+		</Left>
+		<Right Operator="GreaterThan">
+			<Left Operator="Parameter" Value="UnitCost" />
+			<Right Operator="Value" Value="10,0" />
+		</Right>
+	</Condition>
+</RequestExpression>
+```
+
+The server turns this into a query for the database and returns the result via gRPC stream. The client turns this stream into an enumerated stream and gives the mapped entities to the logic.
+
+## Testing
+
+I installed Oracle on a virtual machine. To check, I will select all records from products:
+
+![direct fetch](simple_table_direct_fetch.png)
+
+Next, I connected the computer and the virtual machine to the remote VPN server. Now the ping is about 230 ms. Let's check fetch:
+
+![vpn fetch](simple_table_vpn_fetch.gif)
+

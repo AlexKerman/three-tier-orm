@@ -15,7 +15,7 @@ public partial class OrmService : Orm.OrmBase
 		}
 		catch (Exception ex)
 		{
-			reply.ErrorMessge = ex.Message + "\n" + ex.StackTrace;
+			reply.ErrorMessage = ex.Message + "\n" + ex.StackTrace;
 		}
 		return Task.FromResult(reply);
 	}
